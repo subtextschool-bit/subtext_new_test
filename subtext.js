@@ -162,57 +162,48 @@ if (achievementsList) {
     `).join('')
     : '<p style="opacity:.6">Пока нет достижений</p>';
 }
-    
-    // ===== Уроки =====
-    const lessonsList = document.getElementById('lessons-list');
-    lessonsList.innerHTML = data.lessons.length
-      ? data.lessons.map(l => `
-        <div class="lesson-card">
-          <strong>Урок ${l.num}</strong><br>
-          <a href="${l.link}" target="_blank">Материалы</a>
-          ${l.hwLink && l.hwLink !== '-' ? `<br><a href="${l.hwLink}" target="_blank">ДЗ</a>` : ''}
-        </div>
-      `).join('')
+function renderCourseData(data) {
+  // Ачивки
+  const ach = document.getElementById('achievements-list');
+  if (ach) {
+    const list = (data.achievements || []).filter(a => a.course === currentCourse);
+    ach.innerHTML = list.length
+      ? list.map(a => `<div style="display:flex;flex-direction:column;align-items:center;width:100px;"><div style="width:80px;height:80px;border-radius:50%;overflow:hidden;box-shadow:0 6px 16px rgba(0,0,0,.15);background:#fff;display:flex;align-items:center;justify-content:center;margin-bottom:8px;"><img src="${a.image}" style="width:100%;height:100%;object-fit:cover;"></div><div style="font-size:0.8rem;text-align:center;font-weight:600;">${a.title}</div></div>`).join('')
+      : '<p style="opacity:.6">Пока нет достижений</p>';
+  }
+
+  // Уроки
+  const less = document.getElementById('lessons-list');
+  if (less) {
+    const list = (data.lessons || []).filter(l => l.course === currentCourse);
+    less.innerHTML = list.length
+      ? list.map(l => `<div class="lesson-card"><strong>Урок ${l.num}</strong><br><a href="${l.link}" target="_blank">Материалы</a>${l.hwLink && l.hwLink !== '-' ? `<br><a href="${l.hwLink}" target="_blank">ДЗ</a>` : ''}</div>`).join('')
       : '<p>Нет доступных уроков.</p>';
+  }
 
-    // ===== Материалы =====
-const materialsList = document.getElementById('materials-list');
+  // Материалы
+  const mat = document.getElementById('materials-list');
+  if (mat) {
+    const list = (data.materials || []).filter(m => m.course === currentCourse);
+    mat.innerHTML = list.length
+      ? list.map(m => `<div class="lesson-card"><strong>${m.title}</strong><br><a href="${m.link}" target="_blank" class="lesson-btn">Открыть</a></div>`).join('')
+      : '<p>Материалы пока не добавлены.</p>';
+  }
 
-materialsList.innerHTML = data.materials && data.materials.length
-  ? data.materials.map(m => `
-    <div class="lesson-card">
-      <strong>${m.title}</strong><br>
-      <a href="${m.link}" target="_blank" class="lesson-btn">Открыть</a>
-    </div>
-  `).join('')
-  : '<p>Материалы пока не добавлены.</p>';
-
-
-    // ===== Магазин =====
-    const shopItems = document.getElementById('shop-items');
-    document.getElementById('shop-coins').textContent = u.coins;
-    shopItems.innerHTML = data.shop.length
-      ? data.shop.map((item, idx) => `
-        <div class="shop-item">
-          ${item.image ? `<div style="height:120px;display:flex;align-items:center;justify-content:center;margin-bottom:.5rem">
-            <img src="${item.image}" style="max-width:100%;max-height:100%;object-fit:contain">
-          </div>` : ''}
-          <h3>${item.name}</h3>
-          <div class="price">${item.price} монет</div>
-          <button class="buy-btn" onclick="confirmBuy(${idx}, \`${item.name}\`, ${item.price})">Купить</button>
-        </div>
-      `).join('')
+  // Магазин
+  const shop = document.getElementById('shop-items');
+  if (shop) {
+    const list = (data.shop || []).filter(s => s.course === currentCourse);
+    document.getElementById('shop-coins').textContent = data.user.coins || 0;
+    shop.innerHTML = list.length
+      ? list.map(item => {
+          const realIdx = data.shop.indexOf(item); // Сохраняем оригинальный индекс для покупки
+          return `<div class="shop-item">${item.image ? `<div style="height:120px;display:flex;align-items:center;justify-content:center;margin-bottom:.5rem"><img src="${item.image}" style="max-width:100%;max-height:100%;object-fit:contain"></div>` : ''}<h3>${item.name}</h3><div class="price">${item.price} монет</div><button class="buy-btn" onclick="confirmBuy(${realIdx}, \`${item.name}\`, ${item.price})">Купить</button></div>`;
+        }).join('')
       : '<p>Магазин пуст.</p>';
-
-    document.getElementById('loading').classList.add('hidden');
-    document.getElementById('main').classList.remove('hidden');
-    showSection('profile');
-
-  } catch (e) {
-    console.error(e);
-    document.getElementById('loading').textContent = '❌ Ошибка загрузки кабинета';
   }
 }
+    
 
 // ================= СЛОТЫ =================
 function formatDate(dateStr) {
