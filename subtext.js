@@ -61,14 +61,38 @@ async function loadCabinet() {
     if (!data.success) throw new Error(data.error);
 
     const u = data.user;
-    username = u.username || "";
-// 👇 Вставь сюда
-window.currentCourse = (data.user.subject || 'english').split(',')[0].trim();
-    
-    document.getElementById('username').textContent = u.username || '—';
-    document.getElementById('level').textContent = u.level || '—';
-    document.getElementById('coins').textContent = u.coins || 0;
-    document.getElementById('progress').textContent = u.progress || 0;
+username = u.username || "";
+currentCourse = u.courses?.[0] || "english";
+
+document.getElementById('username').textContent = u.username || '—';
+document.getElementById('level').textContent = (u.levels && u.levels[currentCourse]) || '—';
+document.getElementById('coins').textContent = u.coins || 0;
+
+// 🆕 Переключатель курсов (если их >1)
+if (u.courses && u.courses.length > 1) {
+  let tabs = document.getElementById('course-tabs');
+  if (!tabs) {
+    tabs = document.createElement('div');
+    tabs.id = 'course-tabs';
+    tabs.style.cssText = 'display:flex; gap:8px; margin:10px 0; flex-wrap:wrap;';
+    document.getElementById('profile').prepend(tabs);
+  }
+  tabs.innerHTML = '';
+  u.courses.forEach(c => {
+    const btn = document.createElement('button');
+    btn.textContent = c.charAt(0).toUpperCase() + c.slice(1);
+    btn.className = 'buy-btn';
+    btn.style.opacity = c === currentCourse ? '1' : '0.5';
+    btn.onclick = () => {
+      currentCourse = c;
+      document.getElementById('level').textContent = u.levels[c] || '—';
+      renderCourseData(data);
+      tabs.querySelectorAll('button').forEach(b => b.style.opacity = '0.5');
+      btn.style.opacity = '1';
+    };
+    tabs.appendChild(btn);
+  });
+}
     const progressValue = Math.min(u.progress || 0, 100);
 const xpFill = document.getElementById('xp-fill');
 
