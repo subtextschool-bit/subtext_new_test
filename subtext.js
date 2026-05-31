@@ -3,6 +3,7 @@ const API_URL = "https://script.google.com/macros/s/AKfycbyINw8z9Nv60njsf12RRwLs
 
 let userId;
 let username = "";
+let currentCourse = "";
 
 // ================= UI =================
 function showSection(sectionId) {
