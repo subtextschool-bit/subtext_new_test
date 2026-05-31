@@ -46,7 +46,6 @@ function escapeAttr(value = "") {
    }
    // Здесь можно добавить какую-то логику при открытии "О нас", если нужно
  }
- }
  
  function confirmBuy(index, name, price) {
    if (confirm(`Хотите купить?\n\n${name}\nЦена: ${price} монет`)) {
@@ -337,17 +336,20 @@ function renderCourseData() {
      }
  
      container.innerHTML = slots.map(slot => {
-      const freePlaces = Number(slot.capacity) - Number(slot.bookedCount);
-       const available = freePlaces > 0;
+      const capacity = Number(slot.capacity) || 0;
+      const bookedCount = Number(slot.bookedCount) || 0;
+      const freePlaces = capacity - bookedCount;
+      const available = freePlaces > 0;
+      return 
         <div style="margin-bottom:.8rem;padding:.8rem;border-radius:12px;background:${available ? "#e3f2fd" : "#eee"}">
           <strong>${escapeHtml(slot.title)}</strong><br>
-           ${formatDate(slot.date)} ${formatTime(slot.time)}<br>
-
-            ? `<button class="buy-btn" onclick="bookGroupSlot('${escapeAttr(slot.id)}')">Записаться (${escapeHtml(slot.bookedCount)}/${escapeHtml(slot.capacity)})</button>`
-            : `<span style="opacity:.6">Мест нет (${escapeHtml(slot.capacity)}/${escapeHtml(slot.capacity)})</span>`
-           }
-         </div>
-       `;
+          ${formatDate(slot.date)} ${formatTime(slot.time)}<br>
+          ${available
+            ? `<button class="buy-btn" onclick="bookGroupSlot('${escapeAttr(slot.id)}')">Записаться (${escapeHtml(bookedCount)}/${escapeHtml(capacity)})</button>`
+            : `<span style="opacity:.6">Мест нет (${escapeHtml(capacity)}/${escapeHtml(capacity)})</span>`
+          }
+        </div>
+      `;
      }).join("");
   } catch (e) {
     console.error(e);
@@ -443,5 +445,3 @@ function renderCourseData() {
  // ================= INIT =================
  window.addEventListener("DOMContentLoaded", loadData);
  
-EOF
-)
