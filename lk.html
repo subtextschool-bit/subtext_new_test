@@ -1,551 +1,348 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Subtext - Личный кабинет</title>
-
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
-
-  <style>
-    * { box-sizing: border-box; margin:0; padding:0; }
-    body { font-family: 'Poppins', sans-serif; background-color: #faf9f6; color: #333; }
-    .hidden { display: none; }
- /* ===== Канал ===== */
-    .channel-badge {
-  position: absolute;
-  top: 20px;
-  right: 30px;
-  font-size: 0.9rem;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: #2e7d32;
-  font-weight: 600;
-  opacity: 0.8;
-}
-    /* ===== 14 FEB HEARTS ===== */
-.hearts-container {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  overflow: hidden;
-  z-index: 9999;
-}
-
-.heart {
-  position: absolute;
-  top: -20px;
-  font-size: 20px;
-  animation: fall linear forwards;
-  opacity: 0.8;
-}
-
-@keyframes fall {
-  to {
-    transform: translateY(110vh);
-    opacity: 0.9;
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Subtext - Личный кабинет</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-start: #0f172a;
+    --bg-end: #1e3a8a;
+    --accent: #0ea5e9;
+    --accent-light: #38bdf8;
+    --card-bg: rgba(255, 255, 255, 0.85);
+    --card-border: rgba(255, 255, 255, 0.3);
+    --text-main: #0f172a;
+    --text-muted: #475569;
+    --success: #10b981;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+    --glass: blur(12px);
+    --shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    --radius: 16px;
   }
-}
 
-    
-    /* ===== HEADER ===== */
-    .header {
-      width: 100%;
-      height: 260px;
-      background: url('https://cdn.qwenlm.ai/output/26e59e0c-c12d-470e-9e9d-ead84f166378/t2i/a16a1240-e568-4c39-8993-f9b94b1f3ad3/1769081334.png?key=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyZXNvdXJjZV91c2VyX2lkIjoiMjZlNTllMGMtYzEyZC00NzBlLTllOWQtZWFkODRmMTY2Mzc4IiwicmVzb3VyY2VfaWQiOiIxNzY5MDgxMzM0IiwicmVzb3VyY2VfY2hhdF9pZCI6Ijk0MzFhMmUwLTc5MjYtNGE3Yy04NDhhLWJkZDU2ZmIwMzhmYSJ9.99OvyFwOVuUt-Lmt0WvMKvo17gVGjdeEWDEEEpa8Jf0') no-repeat center center;
-      background-size: cover;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-    }
-    .header::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(to bottom, rgba(255,255,255,0.85), rgba(255,255,255,0.25), rgba(255,255,255,0.85));
-    }
-    .big-title {
-  font-family: 'Playfair Display', serif;
-  font-size: 6rem;
-  color: rgba(255, 255, 255, 0.85);
-  text-align: center;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  /* тёмно-зелёная подсветка */
-  text-shadow:
-    2px 2px 0 rgba(0,60,0,0.7),
-    0 4px 12px rgba(0,0,0,0.15),
-    0 8px 20px rgba(0,0,0,0.1);
-  backdrop-filter: blur(6px);
-  padding: 1rem 2rem;
-  border-radius: 16px;
-  transition: all 0.3s ease;
-}
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background: linear-gradient(135deg, var(--bg-start), var(--bg-end));
+    background-attachment: fixed;
+    min-height: 100vh;
+    color: var(--text-main);
+    padding-bottom: 40px;
+  }
 
-.big-title:hover {
-  transform: scale(1.05);
-  text-shadow:
-    3px 3px 0 rgba(0,60,0,0.75),
-    0 6px 16px rgba(0,0,0,0.2),
-    0 12px 36px rgba(0,0,0,0.15);
-}
+  /* Фоновые декорации */
+  body::before {
+    content: '';
+    position: fixed;
+    top: -10%; left: -10%; right: -10%; bottom: -10%;
+    background: url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1600&q=80') center/cover no-repeat;
+    opacity: 0.15;
+    z-index: -1;
+    animation: bgFloat 60s ease-in-out infinite;
+  }
+  @keyframes bgFloat { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
 
+  /* Навигация */
+  header {
+    background: rgba(15, 23, 42, 0.9);
+    backdrop-filter: var(--glass);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    position: sticky; top: 0; z-index: 100;
+    padding: 12px 0;
+  }
+  .header-inner { max-width: 1100px; margin: 0 auto; padding: 0 20px; display: flex; align-items: center; justify-content: space-between; }
+  .logo { font-weight: 800; font-size: 1.4rem; color: #fff; text-decoration: none; display: flex; align-items: center; gap: 8px; }
+  .logo span { background: linear-gradient(90deg, #38bdf8, #0ea5e9); padding: 4px 10px; border-radius: 8px; color: #0f172a; }
+  .nav { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px; -ms-overflow-style: none; scrollbar-width: none; }
+  .nav::-webkit-scrollbar { display: none; }
+  .nav-btn {
+    background: rgba(255,255,255,0.08);
+    color: #cbd5e1;
+    border: none; padding: 8px 14px; border-radius: 10px; cursor: pointer;
+    font-weight: 500; font-size: 0.9rem; transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .nav-btn:hover { background: rgba(255,255,255,0.15); color: #fff; }
+  .nav-btn.active { background: var(--accent); color: #fff; box-shadow: 0 4px 12px rgba(14, 165, 233, 0.4); }
 
-    /* ===== NAV ===== */
-    .nav-container {
-      display: flex;
-      gap: .8rem;
-      max-width: 900px;
-      margin: 1.5rem auto;
-      padding: .5rem 1rem;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
-    .nav-container button {
-      min-width: 150px;
-      height: 50px;
-      border: none;
-      border-radius: 999px;
-      background: linear-gradient(135deg, #2e7d32, #66bb6a);
-      color: #fff;
-      font-weight: 600;
-      cursor: pointer;
-      box-shadow: 0 6px 14px rgba(46,125,50,.25);
-      transition: all .25s ease;
-    }
-    .nav-container button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 20px rgba(46,125,50,.35);
-    }
+  /* Контейнер */
+  main { max-width: 1100px; margin: 24px auto; padding: 0 20px; }
+  .section { display: none; animation: fadeIn 0.4s ease; }
+  .section.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
-    /* ===== SECTION TITLE ===== */
-    .section-title {
-      font-family: 'Playfair Display', serif;
-      font-size: 2rem;
-      text-align: center;
-      color: #2e7d32;
-      margin-bottom: 1rem;
-      text-shadow: 0 4px 12px rgba(46,125,50,.25);
-    }
+  /* Карточки */
+  .card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    backdrop-filter: var(--glass);
+    border-radius: var(--radius);
+    padding: 20px; margin-bottom: 20px;
+    box-shadow: var(--shadow);
+  }
+  .card h2 { font-size: 1.3rem; margin-bottom: 16px; color: #0f172a; display: flex; align-items: center; gap: 8px; }
+  .card h2 .icon { background: #e0f2fe; color: var(--accent); width: 32px; height: 32px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; font-size: 1.1rem; }
 
-    /* ===== SECTIONS ===== */
-    .section { padding: 1.5rem; animation: fadeIn .3s ease; }
-    @keyframes fadeIn { from {opacity:0; transform:translateY(6px);} to {opacity:1; transform:translateY(0);} }
+  /* Профиль */
+  .profile-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin-top: 16px; }
+  .stat-box {
+    background: #f8fafc; border-radius: 12px; padding: 16px; text-align: center;
+    border: 1px solid #e2e8f0; transition: transform 0.2s;
+  }
+  .stat-box:hover { transform: translateY(-2px); }
+  .stat-label { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 4px; font-weight: 500; }
+  .stat-value { font-size: 1.4rem; font-weight: 700; color: var(--accent); }
+  .avatar-box { text-align: center; margin-bottom: 16px; }
+  .avatar-box img { width: 90px; height: 90px; border-radius: 50%; object-fit: cover; border: 3px solid #fff; box-shadow: 0 6px 16px rgba(0,0,0,0.15); background: #fff; }
 
-    /* ===== PROFILE ===== */
-    .profile-section {
-      max-width: 520px;
-      margin: auto;
-      text-align: center;
-      background: #fff;
-      padding: 2rem;
-      border-radius: 18px;
-      box-shadow: 0 10px 30px rgba(0,0,0,.08);
-    }
-    .avatar-img {
-      width: 130px;
-      height: 130px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 4px solid #2e7d32;
-      margin-bottom: 1rem;
-    }
+  /* Прогресс */
+  .progress-wrap { margin: 16px 0; }
+  .progress-label { display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); }
+  .progress-bar { height: 10px; background: #e2e8f0; border-radius: 99px; overflow: hidden; }
+  .progress-fill { height: 100%; border-radius: 99px; transition: width 0.5s ease; }
 
-    /* ===== GRIDS ===== */
-    .lessons-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 1.2rem;
-    }
-    .shop-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 1.2rem;
-    }
+  /* Табы курсов */
+  #course-tabs { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; justify-content: center; }
+  #course-tabs button { padding: 6px 12px; font-size: 0.85rem; }
 
-    /* ===== CARDS ===== */
-    .lesson-card, .shop-item {
-      background: rgba(255,255,255,0.6);
-      backdrop-filter: blur(10px);
-      border-radius: 18px;
-      padding: 1.4rem;
-      text-align: center;
-      box-shadow: 0 8px 24px rgba(0,0,0,.1);
-      transition: all .25s ease;
-    }
-    .lesson-card:hover, .shop-item:hover { transform: translateY(-4px); box-shadow: 0 14px 30px rgba(0,0,0,.15); }
+  /* Уроки / Материалы */
+  .lesson-card {
+    background: #fff; border-radius: 10px; padding: 14px; margin-bottom: 10px;
+    border-left: 3px solid var(--accent); box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    display: flex; flex-direction: column; gap: 6px;
+  }
+  .lesson-card a { color: var(--accent); font-weight: 500; text-decoration: none; }
+  .lesson-card a:hover { text-decoration: underline; }
 
-    /* ===== BUTTONS ===== */
-    .lesson-btn {
-      display: inline-block;
-      margin-top: .6rem;
-      padding: .6rem 1.4rem;
-      border-radius: 999px;
-      background: linear-gradient(135deg, #2e7d32, #43a047);
-      color: #fff;
-      text-decoration: none;
-      font-weight: 600;
-      box-shadow: 0 6px 14px rgba(46,125,50,.25);
-      transition: all .25s ease;
-    }
-    .lesson-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(46,125,50,.35); }
+  /* Магазин */
+  .shop-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 16px; }
+  .shop-item {
+    background: #fff; border-radius: 12px; padding: 12px; text-align: center;
+    border: 1px solid #e2e8f0; transition: transform 0.2s;
+  }
+  .shop-item:hover { transform: translateY(-3px); box-shadow: 0 8px 16px rgba(0,0,0,0.1); }
+  .shop-item h3 { font-size: 0.95rem; margin: 8px 0; min-height: 40px; }
+  .price { font-weight: 700; color: var(--warning); margin-bottom: 10px; }
 
-    .buy-btn {
-      margin-top: .6rem;
-      padding: .7rem 1.6rem;
-      border-radius: 999px;
-      background: linear-gradient(135deg, #1b5e20, #66bb6a);
-      color: #fff;
-      border: none;
-      font-weight: 600;
-      cursor: pointer;
-      box-shadow: 0 6px 14px rgba(46,125,50,.25);
-      transition: .25s ease;
-    }
-    .buy-btn:hover { transform: scale(1.05); }
+  /* Кнопки */
+  .btn {
+    background: linear-gradient(90deg, #0ea5e9, #3b82f6); color: #fff;
+    border: none; padding: 10px 16px; border-radius: 10px; cursor: pointer;
+    font-weight: 600; transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px;
+  }
+  .btn:hover { filter: brightness(1.05); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(14,165,233,0.3); }
+  .btn.outline { background: #fff; color: var(--accent); border: 1px solid var(--accent); }
+  .btn.outline:hover { background: #f0f9ff; }
 
-    textarea, input[type="file"] {
-      width: 100%;
-      padding: .7rem;
-      border-radius: 10px;
-      border: 1px solid #ccc;
-    }
-    .big-hw-btn {
-  display: inline-block;
-  padding: 1.2rem 2.5rem;
-  border-radius: 999px;
-  background: linear-gradient(135deg, #1b5e20, #66bb6a);
-  color: #fff;
-  font-size: 1.1rem;
-  font-weight: 600;
-  text-decoration: none;
-  box-shadow: 0 8px 20px rgba(46,125,50,.3);
-  transition: all .25s ease;
-}
+  /* Поддержка */
+  .chat-box { background: #fff; border-radius: 10px; padding: 12px; max-height: 300px; overflow-y: auto; margin-bottom: 10px; border: 1px solid #e2e8f0; }
+  .chat-input { display: flex; gap: 8px; }
+  .chat-input input { flex: 1; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; outline: none; }
+  .chat-input input:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(14,165,233,0.1); }
 
-.big-hw-btn:hover {
-  transform: scale(1.05);
-  box-shadow: 0 12px 28px rgba(46,125,50,.4);
-}
+  /* Ачивки */
+  .achievements-list { display: flex; gap: 16px; overflow-x: auto; padding: 8px 0; scroll-snap-type: x mandatory; }
+  .achievements-list > div { scroll-snap-align: center; }
 
-    @media (max-width: 1024px) { .shop-grid { grid-template-columns: repeat(3, 1fr); } }
-    @media (max-width: 768px) { 
-      .big-title { font-size: 3.5rem; }
-      .shop-grid { grid-template-columns: repeat(2, 1fr); }
-    }
-    @media (max-width: 480px) {
-      .shop-grid { grid-template-columns: 1fr; }
-      .section-title { font-size: 1.6rem; }
-    }
-    /* ===== XP BAR ===== */
-.xp-bar {
-  width: 100%;
-  height: 22px;
-  background: linear-gradient(180deg, #e0e0e0, #cfcfcf);
-  border-radius: 999px;
-  overflow: hidden;
-  box-shadow:
-    inset 0 2px 6px rgba(0,0,0,.15),
-    0 4px 12px rgba(0,0,0,.1);
-  margin-top: .8rem;
-}
+  /* Загрузка */
+  #loading {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: linear-gradient(135deg, var(--bg-start), var(--bg-end));
+    display: flex; align-items: center; justify-content: center; flex-direction: column;
+    z-index: 999; transition: opacity 0.3s;
+  }
+  .loader {
+    width: 40px; height: 40px; border: 4px solid rgba(255,255,255,0.2);
+    border-top-color: var(--accent-light); border-radius: 50%;
+    animation: spin 0.8s linear infinite; margin-bottom: 16px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
 
-.xp-fill {
-  height: 100%;
-  width: 0%;
-  border-radius: 999px;
-  background: linear-gradient(90deg, #2e7d32, #66bb6a);
-  box-shadow:
-    0 0 10px rgba(76,175,80,.6),
-    inset 0 2px 6px rgba(255,255,255,.4);
-  transition: width 1s ease, background .4s ease, box-shadow .4s ease;
-}
-/* ===== SUPPORT ===== */
-#support-btn {
-  position: fixed;
-  right: 20px;
-  bottom: 20px;
-  width: 55px;
-  height: 55px;
-  border-radius: 50%;
-  background: #2e7d32;
-  color: white;
-  font-size: 28px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  box-shadow: 0 6px 18px rgba(0,0,0,.3);
-  z-index: 9999;
-}
+  /* Скрыватель */
+  .hidden { display: none !important; opacity: 0; pointer-events: none; }
+  #main { display: none; }
 
-#support-chat {
-  position: fixed;
-  right: 20px;
-  bottom: 90px;
-  width: 300px;
-  background: white;
-  border-radius: 16px;
-  box-shadow: 0 10px 30px rgba(0,0,0,.2);
-  padding: 1rem;
-  z-index: 9999;
-}
-
-  </style>
+  /* Адаптив */
+  @media (max-width: 640px) {
+    .header-inner { flex-direction: column; gap: 10px; align-items: stretch; }
+    .nav { justify-content: flex-start; padding-bottom: 8px; }
+    .card { padding: 16px; }
+    .shop-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
 </head>
-
 <body>
 
-  <div class="header">
-    <div class="channel-badge">
-  t.me/apego_pr
+<div id="loading">
+  <div class="loader"></div>
+  <span style="color: #cbd5e1; font-weight: 500;">Загрузка...</span>
 </div>
-    <div class="big-title">Subtext</div>
+
+<header>
+  <div class="header-inner">
+    <a href="/" class="logo">Subtext <span>Кабинет</span></a>
+    <nav class="nav">
+      <button class="nav-btn active" onclick="showSection('profile')">Профиль</button>
+      <button class="nav-btn" onclick="showSection('lessons')">Уроки</button>
+      <button class="nav-btn" onclick="showSection('materials')">Материалы</button>
+      <button class="nav-btn" onclick="showSection('shop')">Магазин</button>
+      <button class="nav-btn" onclick="showSection('schedule')">Расписание</button>
+      <button class="nav-btn" onclick="showSection('announcements')">Объявления</button>
+      <button class="nav-btn" onclick="showSection('support')">Поддержка</button>
+      <button class="nav-btn" onclick="showSection('about')">О нас</button>
+    </nav>
   </div>
+</header>
 
-  <div id="loading">Загрузка...</div>
+<main id="main">
 
-  <div id="main" class="hidden">
+  <!-- 🧑‍🎓 ПРОФИЛЬ -->
+  <section id="profile" class="section">
+    <div class="card">
+      <div class="avatar-box">
+        <img id="avatar-img" src="" alt="Аватар">
+        <h2 id="username" style="margin-top:10px;">Привет!</h2>
+      </div>
+      <div id="course-tabs"></div>
+      <div class="profile-grid">
+        <div class="stat-box">
+          <div class="stat-label">🎓 Уровень</div>
+          <div id="level" class="stat-value">—</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">🪙 Монеты</div>
+          <div id="coins" class="stat-value">0</div>
+        </div>
+      </div>
 
-    <div class="nav-container">
-      <button onclick="showSection('profile')">Профиль</button>
-      <button onclick="showSection('lessons')">Уроки</button>
-      <button onclick="showSection('homework')">ДЗ</button>
-      <button onclick="showSection('shop')">Магазин</button>
-      <button onclick="showSection('schedule')">Расписание</button>
-      <button onclick="showSection('materials')">Материалы</button>
-      <button onclick="showSection('announcements')">Объявления</button>
-      <button onclick="showSection('about')">О нас</button>
+      <div class="progress-wrap">
+        <div class="progress-label"><span>Прогресс</span> <span id="progress">0%</span></div>
+        <div class="progress-bar"><div id="xp-fill" class="progress-fill" style="width:0%"></div></div>
+      </div>
+
+      <div style="margin-top:12px; font-size:0.9rem; color:var(--text-muted);">
+        <p>🔗 Ссылка: <span id="lesson-link">—</span></p>
+        <p>📅 Расписание: <span id="lesson-schedule">—</span></p>
+      </div>
     </div>
 
-    <!-- ===== ПРОФИЛЬ ===== -->
-    <div id="profile" class="section profile-section">
-      <img id="avatar-img" class="avatar-img">
-      <p>Привет, <strong id="username"></strong>!</p>
-      <p>Уровень: <span id="level"></span></p>
-      <p>Монеты: <span id="coins"></span></p>
-      <p>Баллы: <span id="progress"></span> / 100</p>
-
-<div class="xp-bar">
-  <div class="xp-fill" id="xp-fill"></div>
-</div>
-      <hr style="margin:1.5rem 0">
-
-<h3 style="margin-bottom:1rem">🏆 Мои достижения</h3>
-<div id="achievements-list" 
-     style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center">
-</div>
+    <div class="card">
+      <h2><span class="icon">🏆</span> Мои достижения</h2>
+      <div id="achievements-list" class="achievements-list"></div>
     </div>
+  </section>
 
-    <!-- ===== УРОКИ ===== -->
-    <div id="lessons" class="section hidden">
-      <div class="section-title">Уроки</div>
-      <div id="lessons-list" class="lessons-grid"></div>
+  <!-- 📖 УРОКИ -->
+  <section id="lessons" class="section">
+    <div class="card">
+      <h2><span class="icon">📚</span> Доступные уроки</h2>
+      <div id="lessons-list"></div>
     </div>
+  </section>
 
-    
+  <!-- 📁 МАТЕРИАЛЫ -->
+  <section id="materials" class="section">
+    <div class="card">
+      <h2><span class="icon">📦</span> Материалы</h2>
+      <div id="materials-list"></div>
+    </div>
+  </section>
 
-<!-- ===== ДЗ ===== -->
-<div id="homework" class="section hidden">
-  <div class="section-title">Сдать домашнее задание</div>
-
-  <div class="profile-section" style="text-align:center">
-
-    <p style="margin-bottom:1.5rem">
-      Нажмите кнопку ниже, чтобы открыть форму для отправки ДЗ.
-    </p>
-
-    <a 
-      href="https://docs.google.com/forms/d/e/1FAIpQLSdyaEIut7zciiAfhbNexWHxXLy6eE1IoEwpprm-x8I-penPrw/viewform"
-      target="_blank"
-      class="big-hw-btn">
-      📄 Открыть форму ДЗ
-    </a>
-
-  </div>
-</div>
-
-
-    <!-- ===== МАГАЗИН ===== -->
-    <div id="shop" class="section hidden">
-      <div class="section-title">Магазин</div>
-      <p style="text-align:center;font-weight:bold">
-        💰 Монеты: <span id="shop-coins">0</span>
-      </p>
+  <!-- 🛒 МАГАЗИН -->
+  <section id="shop" class="section">
+    <div class="card">
+      <h2><span class="icon">🛒</span> Магазин <span style="margin-left:auto; font-size:0.9rem; color:var(--warning);" id="shop-coins">0 🪙</span></h2>
       <div id="shop-items" class="shop-grid"></div>
     </div>
-    
-    <!-- ===== ОБЪЯВЛЕНИЯ ===== -->
-<div id="announcements" class="section hidden">
-  <div class="section-title">Объявления</div>
+  </section>
 
-  <div class="profile-section">
-
-    <p><strong>24 февраля</strong></p>
-    <p>
-      ⚙️ С 15:00 до 17:00 возможны технические работы на сайте в разделе "Слоты".  
-      В это время запись на занятия будет не доступна.
-    </p>
-    <hr style="margin:1.5rem 0">
-    
-    <p><strong>19 февраля</strong></p>
-    <p>
-      ⚙️ С 13:00 до 15:00 возможны технические работы на сайте.  
-      В это время некоторые разделы могут временно не работать.
-    </p>
-    <hr style="margin:1.5rem 0">
-    
-    <p><strong>14 февраля</strong></p>
-    <p>
-      Happy Valentine’s Day! 💗
-Collect love, spread kindness, and level up your happiness today.
-    </p>
-
-    <hr style="margin:1.5rem 0">
-
-    <p><strong>12 февраля</strong></p>
-    <p>
-      ⚙️ С 12:00 до 15:00 возможны технические работы на сайте.  
-      В это время некоторые разделы могут временно не работать.
-    </p>
-    
-<hr style="margin:1.5rem 0">  
-    <p><strong>4 февраля</strong></p>
-    <p>
-      🎉 Запуск образовательной платформы Subtext!  
-      Теперь все материалы, расписание, домашние задания и прогресс доступны в личном кабинете.
-    </p>
-  
-  </div>
-</div>
-
-<!-- ====================== РАЗДЕЛ "О НАС" ====================== -->
-<div id="about" class="section hidden">
-  <h2 style="text-align: center; margin-bottom: 40px;">О нас</h2>
-  
-  <div style="max-width: 800px; margin: 0 auto; padding: 0 20px;">
-    
-    <!-- Основной текст по центру -->
-    <div style="text-align: center; font-size: 1.08rem; line-height: 1.8; color: #333; margin-bottom: 50px;">
-      Мы — Subtext, современная образовательная платформа, которая помогает ученикам уверенно осваивать английский язык, математику и физику. Скоро будут и другие предметы!<br><br>
-      Работаем с 2025 года и помогаем ученикам достичь своих целей.
+  <!-- 📅 РАСПИСАНИЕ -->
+  <section id="schedule" class="section">
+    <div class="card">
+      <h2><span class="icon">📅</span> Доступные слоты</h2>
+      <div id="slots-container"></div>
     </div>
+    <div class="card">
+      <h2><span class="icon">👥</span> Групповые занятия</h2>
+      <div id="group-slots-container"></div>
+    </div>
+  </section>
 
-    <h3 style="text-align: center; margin: 40px 0 30px; font-size: 1.4rem;">Наши преподаватели</h3>
-    
-    <!-- Блок преподавателей -->
-    <div style="display: flex; flex-wrap: wrap; gap: 35px; justify-content: center;">
-      
-      <!-- Преподаватель 1 -->
-      <div style="text-align: center; width: 200px;">
-        <div style="width: 150px; height: 150px; margin: 0 auto 15px; border-radius: 50%; overflow: hidden; box-shadow: 0 6px 20px rgba(0,0,0,0.12);">
-          <img src="https://i.imgur.com/3rk6gSA.jpeg" 
-               style="width:100%; height:100%; object-fit: cover;" alt="Полина Дмитриевна">
+  <!-- 📢 ОБЪЯВЛЕНИЯ -->
+  <section id="announcements" class="section">
+    <div class="card">
+      <h2><span class="icon">📢</span> Новости и объявления</h2>
+      <div style="display:flex; flex-direction:column; gap:12px;">
+        <div style="background:#f0f9ff; padding:12px; border-radius:8px; border-left:3px solid var(--accent);">
+          <strong style="color:var(--text-muted); font-size:0.85rem;">24 февраля</strong>
+          <p style="margin-top:4px;">⚙️ С 15:00 до 17:00 возможны технические работы на сайте в разделе "Слоты".</p>
         </div>
-        <strong style="font-size: 1.1rem;">Полина Дмитриевна</strong><br>
-        <small style="color: #555;">Преподаватель английского языка</small>
-        <p style="font-size: 0.92rem; margin-top: 10px; color: #666; line-height: 1.5;">
-         Работаю с учениками всех возрастов: помогаю детям учиться с интересом, а взрослым — уверенно достигать поставленных целей.
-        </p>
-      </div>
-
-      <!-- Преподаватель 2 -->
-      <div style="text-align: center; width: 200px;">
-        <div style="width: 150px; height: 150px; margin: 0 auto 15px; border-radius: 50%; overflow: hidden; box-shadow: 0 6px 20px rgba(0,0,0,0.12);">
-          <img src="https://i.imgur.com/cH16EwE.jpeg" 
-               style="width:100%; height:100%; object-fit: cover;" alt="Татьяна Николаевна">
+        <div style="background:#f0f9ff; padding:12px; border-radius:8px; border-left:3px solid var(--accent);">
+          <strong style="color:var(--text-muted); font-size:0.85rem;">19 февраля</strong>
+          <p style="margin-top:4px;">⚙️ С 13:00 до 15:00 возможны технические работы на сайте.</p>
         </div>
-        <strong style="font-size: 1.1rem;">Татьяна Николаевна</strong><br>
-        <small style="color: #555;">Преподаватель физики и математики</small>
-        <p style="font-size: 0.92rem; margin-top: 10px; color: #666; line-height: 1.5;">
-          Стаж преподавательской деятельности 35 лет. Учитель высшей категории по физике. Готовлю учеников к ОГЭ.
-        </p>
-      </div>
-
-    </div>
-  </div>
-</div>
-    <!-- ===== Материалы ===== -->
-    <div id="materials" class="section hidden">
-  <div class="section-title">Материалы</div>
-  <div id="materials-list" class="lessons-grid"></div>
-</div>
-
-
-    <!-- ===== РАСПИСАНИЕ ===== -->
-    <div id="schedule" class="section hidden">
-      <div class="section-title">Расписание</div>
-
-      <div class="profile-section">
-        <p><strong>Ссылка:</strong></p>
-        <p id="lesson-link">—</p>
-
-        <hr style="margin:1.5rem 0">
-
-        <p><strong>Общее расписание:</strong></p>
-        <p id="lesson-schedule">—</p>
-
-        <hr style="margin:1.5rem 0">
-
-        <p><strong>Доступные слоты:</strong></p>
-      <!-- ⬇️ СЮДА subtext.js РЕНДЕРИТ СЛОТЫ -->
-        <div id="slots-container"></div>
-
-        <hr style="margin:1.5rem 0">
-
-<p><strong>Групповые занятия:</strong></p>
-<div id="group-slots-container"></div>
-      
+        <div style="background:#f0f9ff; padding:12px; border-radius:8px; border-left:3px solid #ec4899;">
+          <strong style="color:#ec4899; font-size:0.85rem;">14 февраля</strong>
+          <p style="margin-top:4px;">💗 Happy Valentine’s Day! Collect love, spread kindness, and level up your happiness today.</p>
+        </div>
+        <div style="background:#f0f9ff; padding:12px; border-radius:8px; border-left:3px solid var(--success);">
+          <strong style="color:var(--success); font-size:0.85rem;">4 февраля</strong>
+          <p style="margin-top:4px;">🎉 Запуск образовательной платформы Subtext!</p>
+        </div>
       </div>
     </div>
+  </section>
 
-  </div>
-  
-  <!-- ===== SUPPORT BUTTON ===== -->
+  <!-- 💬 ПОДДЕРЖКА -->
+  <section id="support" class="section">
+    <div class="card">
+      <h2><span class="icon">💬</span> Поддержка</h2>
+      <div id="support-messages" class="chat-box"></div>
+      <div class="chat-input">
+        <input id="support-input" type="text" placeholder="Введите вопрос...">
+        <button class="btn" onclick="sendSupport()">Отправить</button>
+      </div>
+    </div>
+  </section>
 
-<div id="support-btn" onclick="toggleSupport()">?</div>
+  <!-- 🏫 О НАС -->
+  <section id="about" class="section">
+    <div class="card">
+      <h2><span class="icon">🌟</span> О платформе Subtext</h2>
+      <p style="line-height:1.6; margin-bottom:16px;">Мы помогаем ученикам уверенно осваивать английский язык, математику и физику. Современные методики, удобная подача и забота о каждом ученике.</p>
+      <h3 style="margin-bottom:10px;">Наши преподаватели</h3>
+      <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(220px,1fr)); gap:12px;">
+        <div style="background:#fff; padding:10px; border-radius:10px; display:flex; align-items:center; gap:10px; border:1px solid #e2e8f0;">
+          <img src="https://i.imgur.com/3rk6gSA.jpeg" style="width:50px; height:50px; border-radius:50%; object-fit:cover;">
+          <div><strong>Полина Дмитриевна</strong><br><small style="color:var(--text-muted);">Английский язык</small></div>
+        </div>
+        <div style="background:#fff; padding:10px; border-radius:10px; display:flex; align-items:center; gap:10px; border:1px solid #e2e8f0;">
+          <img src="https://i.imgur.com/cH16EwE.jpeg" style="width:50px; height:50px; border-radius:50%; object-fit:cover;">
+          <div><strong>Татьяна Николаевна</strong><br><small style="color:var(--text-muted);">Физика и математика</small></div>
+        </div>
+      </div>
+    </div>
+  </section>
 
-<div id="support-chat" class="hidden">
-  <div id="support-messages" style="max-height:200px;overflow-y:auto;margin-bottom:10px"></div>
-  <textarea id="support-input" placeholder="Ваш вопрос..." style="margin-bottom:8px"></textarea>
-  <button onclick="sendSupport()">Отправить</button>
-</div>
-
-   <script src="subtext.js?v=20260531"></script>
-
-  <div class="hearts-container" id="hearts"></div>
+</main>
 
 <script>
-function startHearts() {
-  const container = document.getElementById("hearts");
-
-  setInterval(() => {
-    const heart = document.createElement("div");
-    heart.className = "heart";
-    heart.innerHTML = "💗";
-
-    heart.style.left = Math.random() * 100 + "vw";
-    heart.style.fontSize = (16 + Math.random() * 20) + "px";
-    heart.style.animationDuration = (4 + Math.random() * 4) + "s";
-
-    container.appendChild(heart);
-
-    setTimeout(() => heart.remove(), 8000);
-  }, 300);
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(el => el.classList.add('hidden'));
+  const el = document.getElementById(id);
+  if (el) el.classList.remove('hidden');
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  event?.target?.classList.add('active') || document.querySelector(`.nav-btn[onclick*="${id}"]`)?.classList.add('active');
+  if (id === 'schedule') loadSlots();
 }
 
-// ===== Включаем сердечки ТОЛЬКО 13-15 февраля =====
-const today = new Date();
-const day = today.getDate();
-const month = today.getMonth();
-if (month === 1 && day >= 13 && day <= 15) {
-  startHearts();
+function confirmBuy(index, name, price) {
+  if (confirm(`Хотите купить?\n\n${name}\nЦена: ${price} монет`)) buyItem(index);
 }
-
 </script>
+<script src="subtext.js"></script>
 </body>
 </html>
