@@ -3,6 +3,10 @@ let userId = "";
 let username = "";
 let currentCourse = "";
 let cabinetData = null;
+let notificationsCache = [];
+let notificationsLoadedOnce = false;
+let notificationsTimer = null;
+let soundUnlocked = false;
 
 function setText(id, value) {
   const el = document.getElementById(id);
@@ -30,6 +34,144 @@ function escapeHtml(value = "") {
 function escapeAttr(value = "") {
   return escapeHtml(value).replace(/`/g, "&#96;");
 }
+
+function normalizeNotification(raw = {}, index = 0) {
+  if (typeof raw === "string") {
+    return {
+      id: `text-${index}-${raw}`,
+      title: "Уведомление",
+      text: raw,
+      date: "",
+      read: false,
+      sound: true,
+    };
+  }
+
+  return {
+    id: String(raw.id || raw.date || raw.title || raw.text || raw.message || index),
+    title: raw.title || raw.Заголовок || "Уведомление",
+    text: raw.text || raw.message || raw.Текст || raw.Сообщение || "",
+    date: raw.date || raw.Дата || raw.createdAt || "",
+    read: raw.read === true || raw.read === "TRUE" || raw.status === "read" || raw.Статус === "прочитано",
+    sound: raw.sound !== false && raw.sound !== "FALSE" && raw.sound !== "нет",
+  };
+}
+
+function unlockNotificationSound() {
+  soundUnlocked = true;
+}
+
+function playNotificationSound() {
+  if (!soundUnlocked) return;
+
+  try {
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContext) return;
+
+    const ctx = new AudioContext();
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(0.0001, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.08, ctx.currentTime + 0.03);
+    gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.7);
+    gain.connect(ctx.destination);
+
+    [660, 880].forEach((freq, index) => {
+      const osc = ctx.createOscillator();
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(freq, ctx.currentTime + index * 0.14);
+      osc.connect(gain);
+      osc.start(ctx.currentTime + index * 0.14);
+      osc.stop(ctx.currentTime + 0.45 + index * 0.14);
+    });
+
+    setTimeout(() => ctx.close(), 900);
+  } catch (e) {
+    console.warn("Notification sound is unavailable", e);
+  }
+}
+
+function renderNotifications(items = []) {
+  const listEl = document.getElementById("notify-list");
+  const countEl = document.getElementById("notify-count");
+  if (!listEl || !countEl) return;
+
+  notificationsCache = items.map(normalizeNotification);
+  const unreadCount = notificationsCache.filter(item => !item.read).length;
+
+  countEl.textContent = unreadCount > 99 ? "99+" : String(unreadCount);
+  countEl.style.display = unreadCount ? "flex" : "none";
+
+  listEl.innerHTML = notificationsCache.length
+    ? notificationsCache.map(item => `
+      <div class="notify-item ${item.read ? "" : "unread"}">
+        <div class="notify-title">${escapeHtml(item.title)}</div>
+        <div class="notify-text">${escapeHtml(item.text)}</div>
+        ${item.date ? `<div class="notify-date">${escapeHtml(item.date)}</div>` : ""}
+      </div>
+    `).join("")
+    : '<div class="notify-empty">Пока нет уведомлений</div>';
+}
+
+async function loadNotifications({ silent = false } = {}) {
+  if (!userId) return;
+
+  try {
+    const res = await fetch(buildUrl({ action: "get_notifications", userId }));
+    const data = await res.json();
+    const rawNotifications = data.notifications || data.messages || data.items || [];
+    const nextNotifications = rawNotifications.map(normalizeNotification);
+    const previousIds = new Set(notificationsCache.map(item => item.id));
+    const hasNewSoundNotification = notificationsLoadedOnce
+      && nextNotifications.some(item => !item.read && item.sound && !previousIds.has(item.id));
+
+    renderNotifications(nextNotifications);
+
+    if (!silent && hasNewSoundNotification) {
+      playNotificationSound();
+    }
+
+    notificationsLoadedOnce = true;
+  } catch (e) {
+    const fallback = cabinetData?.notifications || cabinetData?.user?.notifications || [];
+    const fallbackList = Array.isArray(fallback)
+      ? fallback
+      : String(fallback || "")
+        .split("|")
+        .map(item => item.trim())
+        .filter(Boolean);
+
+    if (fallbackList.length) {
+      renderNotifications(fallbackList);
+    }
+
+    console.warn("Notifications API is unavailable", e);
+  }
+}
+
+function startNotificationsPolling() {
+  if (notificationsTimer) clearInterval(notificationsTimer);
+  loadNotifications({ silent: true });
+  notificationsTimer = setInterval(() => loadNotifications(), 60000);
+}
+
+function toggleNotifications() {
+  unlockNotificationSound();
+  document.getElementById("notify-panel")?.classList.toggle("hidden");
+  loadNotifications({ silent: true });
+}
+
+async function markNotificationsRead() {
+  renderNotifications(notificationsCache.map(item => ({ ...item, read: true })));
+
+  try {
+    await fetch(buildUrl({ action: "mark_notifications_read", userId }));
+  } catch (e) {
+    console.warn("Cannot mark notifications as read", e);
+  }
+}
+
+
+
 
 // ================= UI =================
 function showSection(sectionId) {
@@ -125,13 +267,16 @@ async function loadCabinet() {
     renderProgress(u.progress || 0);
     renderCourseTabs();
     renderCourseData();
-
+    renderNotifications(data.notifications || u.notifications || []);
+ 
+    document.getElementById("loading")?.classList.add("hidden");
     document.getElementById("main")?.classList.remove("hidden");
+    startNotificationsPolling();
   } catch (e) {
     console.error(e);
     setText("loading", `❌ ${e.message}`);
-  }
-}
+   }
+ }
 
 function renderProgress(progress) {
   const progressValue = Math.min(Number(progress) || 0, 100);
@@ -375,4 +520,7 @@ async function sendSupport() {
 }
 
 // ================= INIT =================
-window.addEventListener("DOMContentLoaded", loadData);
+window.addEventListener("DOMContentLoaded", () => {
+   document.addEventListener("click", unlockNotificationSound, { once: true });
+   loadData();
+ });
