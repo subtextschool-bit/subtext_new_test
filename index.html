@@ -1,79 +1,198 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <title>Личный кабинет</title>
-  <style>
-    body { font-family: system-ui, sans-serif; max-width: 600px; margin: 40px auto; padding: 20px; background: #f5f7fa; }
-    input, button { padding: 12px; width: 100%; margin: 5px 0; box-sizing: border-box; }
-    button { background: #2563eb; color: white; border: none; border-radius: 6px; cursor: pointer; }
-    button:hover { background: #1d4ed8; }
-    #cabinet { display: none; margin-top: 20px; }
-    .profile { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; background: white; padding: 15px; border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.05); }
-    .profile img { width: 70px; height: 70px; border-radius: 50%; object-fit: cover; }
-    .course-card { background: white; padding: 15px; margin-bottom: 15px; border-radius: 8px; border-left: 4px solid #2563eb; }
-    .course-card h3 { margin: 0 0 10px 0; color: #1e293b; }
-    .course-card p { margin: 4px 0; color: #475569; }
-    #error { color: #dc2626; margin-top: 10px; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Subtext — Вход</title>
+
+<link href="https://script.google.com/macros/s/AKfycby4xLAp7oIp53YGooG3WH7Hi73y--C-nIrNhbX-35BKzl7__kRf9nr5FAdYWKnfBiT5/exec" rel="stylesheet">
+
+<style>
+:root {
+  --lamp-on: 0;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: 'Poppins', sans-serif;
+  background: radial-gradient(circle at top, #1c1f1c, #0f120f);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  transition: background 0.6s ease;
+}
+
+body[data-on="true"] {
+  background:
+    radial-gradient(circle at top, #e8f5e9, #c8e6c9),
+    linear-gradient(135deg, #e0f2f1, #f1f8e9);
+}
+
+/* ===== ЛАМПА ===== */
+.lamp-wrap {
+  position: absolute;
+  top: 40px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.lamp {
+  font-size: 5rem;
+  transition: .4s ease;
+  filter: drop-shadow(0 0 calc(40px * var(--lamp-on)) rgba(255,255,180,.8));
+}
+
+.switch {
+  margin-top: .4rem;
+  font-size: .85rem;
+  opacity: .7;
+}
+
+.lamp-wrap:hover .lamp {
+  transform: scale(1.08);
+}
+
+/* ===== CARD ===== */
+.card {
+  opacity: 0;
+  transform: translateY(20px);
+  pointer-events: none;
+  transition: .6s ease;
+  width: 100%;
+  max-width: 420px;
+  background: rgba(255,255,255,0.65);
+  backdrop-filter: blur(18px);
+  border-radius: 26px;
+  padding: 3rem 2.5rem;
+  box-shadow:
+    0 20px 60px rgba(0,0,0,.15),
+    inset 0 0 0 1px rgba(255,255,255,.4);
+  text-align: center;
+  color: #1b3a1b;
+}
+
+body[data-on="true"] .card {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+/* ===== TEXT ===== */
+.logo {
+  font-family: 'Playfair Display', serif;
+  font-size: 3.8rem;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.9);
+  text-shadow:
+    2px 2px 0 rgba(0,60,0,.7),
+    0 10px 25px rgba(0,0,0,.25);
+  margin-bottom: .4rem;
+}
+
+.subtitle {
+  font-size: .95rem;
+  opacity: .85;
+  margin-bottom: 2.5rem;
+}
+
+input {
+  width: 100%;
+  padding: 1rem 1.2rem;
+  border-radius: 999px;
+  border: none;
+  font-size: 1rem;
+  outline: none;
+  text-align: center;
+  margin-bottom: 1.2rem;
+}
+
+button {
+  width: 100%;
+  padding: 1rem;
+  border-radius: 999px;
+  border: none;
+  font-weight: 600;
+  color: #fff;
+  cursor: pointer;
+  background: linear-gradient(135deg, #1b5e20, #66bb6a);
+}
+
+.error {
+  margin-top: 1rem;
+  font-size: .85rem;
+  color: #b71c1c;
+  min-height: 1.2em;
+}
+
+.hint {
+  margin-top: 1.6rem;
+  font-size: .75rem;
+  opacity: .7;
+}
+</style>
 </head>
-<body>
 
-  <h2>Вход в кабинет</h2>
-  <input id="loginInput" type="text" placeholder="Ваш логин">
-  <button onclick="loadCabinet()">Войти</button>
-  <p id="error"></p>
+<body data-on="false">
 
-  <div id="cabinet">
-    <div class="profile">
-      <img id="photo" src="" alt="Фото">
-      <div><h3 id="name" style="margin:0;"></h3><small id="loginDisplay"></small></div>
-    </div>
-    <h3 style="margin-top:20px;">📚 Мои курсы</h3>
-    <div id="coursesList"></div>
-  </div>
+<!-- ЛАМПА -->
+<div class="lamp-wrap" onclick="toggleLamp()">
+  <div class="lamp">💡</div>
+  <div class="switch">включить свет</div>
+</div>
 
-  <script>
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzPGoaEDfp2sWlBBa_2Ca1-HCVfYulqHs-CruClajso_9xXma71atW-BJ6KogVYpO-l/exec';
+<!-- CARD -->
+<div class="card">
+  <div class="logo">Subtext</div>
+  <div class="subtitle">Личный кабинет ученика</div>
 
-    async function loadCabinet() {
-      const login = document.getElementById('loginInput').value.trim();
-      if (!login) return;
+  <input type="text" id="idInput" placeholder="Введите ваш ID">
+  <button onclick="enterById()">Войти</button>
 
-      document.getElementById('error').textContent = '';
-      document.getElementById('cabinet').style.display = 'none';
-      document.getElementById('coursesList').innerHTML = 'Загрузка...';
+  <div id="errorMsg" class="error"></div>
+  <div class="hint">ID выдаётся преподавателем</div>
+</div>
 
-      try {
-        const res = await fetch(SCRIPT_URL, {
-          method: 'POST',
-          body: JSON.stringify({ login })
-        });
-        const data = await res.json();
-        if (data.error) throw new Error(data.error);
+<script>
+const API_URL = "https://script.google.com/macros/s/AKfycbxO8y378kvNHLl-z12KiBFX5f1nueUrIYsdyRizn1GCbXYJBTos_-IWFtYmxRzmk5_gkw/exec";
 
-        document.getElementById('name').textContent = data.name;
-        document.getElementById('photo').src = data.photo || 'https://via.placeholder.com/80';
-        document.getElementById('loginDisplay').textContent = `@${login}`;
+let isOn = false;
+const root = document.documentElement;
+const body = document.body;
 
-        const list = document.getElementById('coursesList');
-        list.innerHTML = '';
-        
-        for (const [course, info] of Object.entries(data.courses)) {
-          let html = `<div class="course-card"><h3>${course.toUpperCase()}</h3>`;
-          for (const [key, val] of Object.entries(info)) {
-            if (key !== 'login') html += `<p><b>${key}:</b> ${val}</p>`;
-          }
-          html += `</div>`;
-          list.innerHTML += html;
-        }
+function toggleLamp() {
+  isOn = !isOn;
+  body.setAttribute("data-on", isOn);
+  root.style.setProperty("--lamp-on", isOn ? 1 : 0);
+}
 
-        document.getElementById('cabinet').style.display = 'block';
-      } catch (e) {
-        document.getElementById('error').textContent = e.message;
-        document.getElementById('coursesList').innerHTML = '';
-      }
+async function enterById() {
+  const id = idInput.value.trim();
+  errorMsg.textContent = "";
+
+  if (!id) {
+    errorMsg.textContent = "Введите ID";
+    return;
+  }
+
+  try {
+    const res = await fetch(`${API_URL}?action=check_user&userId=${encodeURIComponent(id)}`);
+    const data = await res.json();
+
+    if (data.success) {
+      window.location.href = `lk.html?id=${encodeURIComponent(id)}`;
+    } else {
+      errorMsg.textContent = "Пользователь не зарегистрирован";
     }
-  </script>
+  } catch {
+    errorMsg.textContent = "Ошибка соединения";
+  }
+}
+</script>
+
 </body>
 </html>
