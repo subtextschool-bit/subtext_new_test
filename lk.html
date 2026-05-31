@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Subtext - Личный кабинет</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    * { box-sizing: border-box; margin:0; padding:0; }
+    body { font-family: 'Poppins', sans-serif; background-color: #faf9f6; color: #333; }
+    .hidden { display: none; }
+ /* ===== Канал ===== */
+    .channel-badge {
+  position: absolute;
+  top: 20px;
+  right: 30px;
+  font-size: 0.9rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #2e7d32;
+  font-weight: 600;
+  opacity: 0.8;
+}
+    /* ===== 14 FEB HEARTS ===== */
+.hearts-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 9999;
+}
+
+.heart {
+  position: absolute;
+  top: -20px;
+  font-size: 20px;
+  animation: fall linear forwards;
+  opacity: 0.8;
+}
+
+@keyframes fall {
+  to {
+    transform: translateY(110vh);
+    opacity: 0.9;
+  }
+}
+
+    
+    /* ===== HEADER ===== */
+    .header {
+      width: 100%;
+      height: 260px;
+      background: url('https://cdn.qwenlm.ai/output/26e59e0c-c12d-470e-9e9d-ead84f166378/t2i/a16a1240-e568-4c39-8993-f9b94b1f3ad3/1769081334.png?key=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyZXNvdXJjZV91c2VyX2lkIjoiMjZlNTllMGMtYzEyZC00NzBlLTllOWQtZWFkODRmMTY2Mzc4IiwicmVzb3VyY2VfaWQiOiIxNzY5MDgxMzM0IiwicmVzb3VyY2VfY2hhdF9pZCI6Ijk0MzFhMmUwLTc5MjYtNGE3Yy04NDhhLWJkZDU2ZmIwMzhmYSJ9.99OvyFwOVuUt-Lmt0WvMKvo17gVGjdeEWDEEEpa8Jf0') no-repeat center center;
+      background-size: cover;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    .header::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, rgba(255,255,255,0.85), rgba(255,255,255,0.25), rgba(255,255,255,0.85));
+    }
+    .big-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 6rem;
+  color: rgba(255, 255, 255, 0.85);
+  text-align: center;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  /* тёмно-зелёная подсветка */
+  text-shadow:
+    2px 2px 0 rgba(0,60,0,0.7),
+    0 4px 12px rgba(0,0,0,0.15),
+    0 8px 20px rgba(0,0,0,0.1);
+  backdrop-filter: blur(6px);
+  padding: 1rem 2rem;
+  border-radius: 16px;
+  transition: all 0.3s ease;
+}
+
+.big-title:hover {
+  transform: scale(1.05);
+  text-shadow:
+    3px 3px 0 rgba(0,60,0,0.75),
+    0 6px 16px rgba(0,0,0,0.2),
+    0 12px 36px rgba(0,0,0,0.15);
+}
+
+
+    /* ===== NAV ===== */
+    .nav-container {
+      display: flex;
+      gap: .8rem;
+      max-width: 900px;
+      margin: 1.5rem auto;
+      padding: .5rem 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .nav-container button {
+      min-width: 150px;
+      height: 50px;
+      border: none;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #2e7d32, #66bb6a);
+      color: #fff;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 6px 14px rgba(46,125,50,.25);
+      transition: all .25s ease;
+    }
+    .nav-container button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(46,125,50,.35);
+    }
+
+    /* ===== SECTION TITLE ===== */
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem;
+      text-align: center;
+      color: #2e7d32;
+      margin-bottom: 1rem;
+      text-shadow: 0 4px 12px rgba(46,125,50,.25);
+    }
+
+    /* ===== SECTIONS ===== */
+    .section { padding: 1.5rem; animation: fadeIn .3s ease; }
+    @keyframes fadeIn { from {opacity:0; transform:translateY(6px);} to {opacity:1; transform:translateY(0);} }
+
+    /* ===== PROFILE ===== */
+    .profile-section {
+      max-width: 520px;
+      margin: auto;
+      text-align: center;
+      background: #fff;
+      padding: 2rem;
+      border-radius: 18px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.08);
+    }
+    .avatar-img {
+      width: 130px;
+      height: 130px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 4px solid #2e7d32;
+      margin-bottom: 1rem;
+    }
+
+    /* ===== GRIDS ===== */
+    .lessons-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.2rem;
+    }
+    .shop-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.2rem;
+    }
+
+    /* ===== CARDS ===== */
+    .lesson-card, .shop-item {
+      background: rgba(255,255,255,0.6);
+      backdrop-filter: blur(10px);
+      border-radius: 18px;
+      padding: 1.4rem;
+      text-align: center;
+      box-shadow: 0 8px 24px rgba(0,0,0,.1);
+      transition: all .25s ease;
+    }
+    .lesson-card:hover, .shop-item:hover { transform: translateY(-4px); box-shadow: 0 14px 30px rgba(0,0,0,.15); }
+
+    /* ===== BUTTONS ===== */
+    .lesson-btn {
+      display: inline-block;
+      margin-top: .6rem;
+      padding: .6rem 1.4rem;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #2e7d32, #43a047);
+      color: #fff;
+      text-decoration: none;
+      font-weight: 600;
+      box-shadow: 0 6px 14px rgba(46,125,50,.25);
+      transition: all .25s ease;
+    }
+    .lesson-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(46,125,50,.35); }
+
+    .buy-btn {
+      margin-top: .6rem;
+      padding: .7rem 1.6rem;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #1b5e20, #66bb6a);
+      color: #fff;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 6px 14px rgba(46,125,50,.25);
+      transition: .25s ease;
+    }
+    .buy-btn:hover { transform: scale(1.05); }
+
+    textarea, input[type="file"] {
+      width: 100%;
+      padding: .7rem;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+    }
+    .big-hw-btn {
+  display: inline-block;
+  padding: 1.2rem 2.5rem;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #1b5e20, #66bb6a);
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 600;
+  text-decoration: none;
+  box-shadow: 0 8px 20px rgba(46,125,50,.3);
+  transition: all .25s ease;
+}
+
+.big-hw-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 12px 28px rgba(46,125,50,.4);
+}
+
+    @media (max-width: 1024px) { .shop-grid { grid-template-columns: repeat(3, 1fr); } }
+    @media (max-width: 768px) { 
+      .big-title { font-size: 3.5rem; }
+      .shop-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 480px) {
+      .shop-grid { grid-template-columns: 1fr; }
+      .section-title { font-size: 1.6rem; }
+    }
+    /* ===== XP BAR ===== */
+.xp-bar {
+  width: 100%;
+  height: 22px;
+  background: linear-gradient(180deg, #e0e0e0, #cfcfcf);
+  border-radius: 999px;
+  overflow: hidden;
+  box-shadow:
+    inset 0 2px 6px rgba(0,0,0,.15),
+    0 4px 12px rgba(0,0,0,.1);
+  margin-top: .8rem;
+}
+
+.xp-fill {
+  height: 100%;
+  width: 0%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #2e7d32, #66bb6a);
+  box-shadow:
+    0 0 10px rgba(76,175,80,.6),
+    inset 0 2px 6px rgba(255,255,255,.4);
+  transition: width 1s ease, background .4s ease, box-shadow .4s ease;
+}
+/* ===== SUPPORT ===== */
+#support-btn {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  width: 55px;
+  height: 55px;
+  border-radius: 50%;
+  background: #2e7d32;
+  color: white;
+  font-size: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(0,0,0,.3);
+  z-index: 9999;
+}
+
+#support-chat {
+  position: fixed;
+  right: 20px;
+  bottom: 90px;
+  width: 300px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0,0,0,.2);
+  padding: 1rem;
+  z-index: 9999;
+}
+
+  </style>
+</head>
+
+<body>
+
+  <div class="header">
+    <div class="channel-badge">
+  t.me/apego_pr
+</div>
+    <div class="big-title">Subtext</div>
+  </div>
+
+  <div id="loading">Загрузка...</div>
+
+  <div id="main" class="hidden">
+
+    <div class="nav-container">
+      <button onclick="showSection('profile')">Профиль</button>
+      <button onclick="showSection('lessons')">Уроки</button>
+      <button onclick="showSection('homework')">ДЗ</button>
+      <button onclick="showSection('shop')">Магазин</button>
+      <button onclick="showSection('schedule')">Расписание</button>
+      <button onclick="showSection('materials')">Материалы</button>
+      <button onclick="showSection('announcements')">Объявления</button>
+      <button onclick="showSection('about')">О нас</button>
+    </div>
+
+    <!-- ===== ПРОФИЛЬ ===== -->
+    <div id="profile" class="section profile-section">
+      <img id="avatar-img" class="avatar-img">
+      <p>Привет, <strong id="username"></strong>!</p>
+      <p>Уровень: <span id="level"></span></p>
+      <p>Монеты: <span id="coins"></span></p>
+      <p>Баллы: <span id="progress"></span> / 100</p>
+
+<div class="xp-bar">
+  <div class="xp-fill" id="xp-fill"></div>
+</div>
+      <hr style="margin:1.5rem 0">
+
+<h3 style="margin-bottom:1rem">🏆 Мои достижения</h3>
+<div id="achievements-list" 
+     style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center">
+</div>
+    </div>
+
+    <!-- ===== УРОКИ ===== -->
+    <div id="lessons" class="section hidden">
+      <div class="section-title">Уроки</div>
+      <div id="lessons-list" class="lessons-grid"></div>
+    </div>
+
+    
+
+<!-- ===== ДЗ ===== -->
+<div id="homework" class="section hidden">
+  <div class="section-title">Сдать домашнее задание</div>
+
+  <div class="profile-section" style="text-align:center">
+
+    <p style="margin-bottom:1.5rem">
+      Нажмите кнопку ниже, чтобы открыть форму для отправки ДЗ.
+    </p>
+
+    <a 
+      href="https://docs.google.com/forms/d/e/1FAIpQLSdyaEIut7zciiAfhbNexWHxXLy6eE1IoEwpprm-x8I-penPrw/viewform"
+      target="_blank"
+      class="big-hw-btn">
+      📄 Открыть форму ДЗ
+    </a>
+
+  </div>
+</div>
+
+
+    <!-- ===== МАГАЗИН ===== -->
+    <div id="shop" class="section hidden">
+      <div class="section-title">Магазин</div>
+      <p style="text-align:center;font-weight:bold">
+        💰 Монеты: <span id="shop-coins">0</span>
+      </p>
+      <div id="shop-items" class="shop-grid"></div>
+    </div>
+    
+    <!-- ===== ОБЪЯВЛЕНИЯ ===== -->
+<div id="announcements" class="section hidden">
+  <div class="section-title">Объявления</div>
+
+  <div class="profile-section">
+
+    <p><strong>24 февраля</strong></p>
+    <p>
+      ⚙️ С 15:00 до 17:00 возможны технические работы на сайте в разделе "Слоты".  
+      В это время запись на занятия будет не доступна.
+    </p>
+    <hr style="margin:1.5rem 0">
+    
+    <p><strong>19 февраля</strong></p>
+    <p>
+      ⚙️ С 13:00 до 15:00 возможны технические работы на сайте.  
+      В это время некоторые разделы могут временно не работать.
+    </p>
+    <hr style="margin:1.5rem 0">
+    
+    <p><strong>14 февраля</strong></p>
+    <p>
+      Happy Valentine’s Day! 💗
+Collect love, spread kindness, and level up your happiness today.
+    </p>
+
+    <hr style="margin:1.5rem 0">
+
+    <p><strong>12 февраля</strong></p>
+    <p>
+      ⚙️ С 12:00 до 15:00 возможны технические работы на сайте.  
+      В это время некоторые разделы могут временно не работать.
+    </p>
+    
+<hr style="margin:1.5rem 0">  
+    <p><strong>4 февраля</strong></p>
+    <p>
+      🎉 Запуск образовательной платформы Subtext!  
+      Теперь все материалы, расписание, домашние задания и прогресс доступны в личном кабинете.
+    </p>
+  
+  </div>
+</div>
+
+<!-- ====================== РАЗДЕЛ "О НАС" ====================== -->
+<div id="about" class="section hidden">
+  <h2 style="text-align: center; margin-bottom: 40px;">О нас</h2>
+  
+  <div style="max-width: 800px; margin: 0 auto; padding: 0 20px;">
+    
+    <!-- Основной текст по центру -->
+    <div style="text-align: center; font-size: 1.08rem; line-height: 1.8; color: #333; margin-bottom: 50px;">
+      Мы — Subtext, современная образовательная платформа, которая помогает ученикам уверенно осваивать английский язык, математику и физику. Скоро будут и другие предметы!<br><br>
+      Работаем с 2025 года и помогаем ученикам достичь своих целей.
+    </div>
+
+    <h3 style="text-align: center; margin: 40px 0 30px; font-size: 1.4rem;">Наши преподаватели</h3>
+    
+    <!-- Блок преподавателей -->
+    <div style="display: flex; flex-wrap: wrap; gap: 35px; justify-content: center;">
+      
+      <!-- Преподаватель 1 -->
+      <div style="text-align: center; width: 200px;">
+        <div style="width: 150px; height: 150px; margin: 0 auto 15px; border-radius: 50%; overflow: hidden; box-shadow: 0 6px 20px rgba(0,0,0,0.12);">
+          <img src="https://i.imgur.com/3rk6gSA.jpeg" 
+               style="width:100%; height:100%; object-fit: cover;" alt="Полина Дмитриевна">
+        </div>
+        <strong style="font-size: 1.1rem;">Полина Дмитриевна</strong><br>
+        <small style="color: #555;">Преподаватель английского языка</small>
+        <p style="font-size: 0.92rem; margin-top: 10px; color: #666; line-height: 1.5;">
+         Работаю с учениками всех возрастов: помогаю детям учиться с интересом, а взрослым — уверенно достигать поставленных целей.
+        </p>
+      </div>
+
+      <!-- Преподаватель 2 -->
+      <div style="text-align: center; width: 200px;">
+        <div style="width: 150px; height: 150px; margin: 0 auto 15px; border-radius: 50%; overflow: hidden; box-shadow: 0 6px 20px rgba(0,0,0,0.12);">
+          <img src="https://i.imgur.com/cH16EwE.jpeg" 
+               style="width:100%; height:100%; object-fit: cover;" alt="Татьяна Николаевна">
+        </div>
+        <strong style="font-size: 1.1rem;">Татьяна Николаевна</strong><br>
+        <small style="color: #555;">Преподаватель физики и математики</small>
+        <p style="font-size: 0.92rem; margin-top: 10px; color: #666; line-height: 1.5;">
+          Стаж преподавательской деятельности 35 лет. Учитель высшей категории по физике. Готовлю учеников к ОГЭ.
+        </p>
+      </div>
+
+    </div>
+  </div>
+</div>
+    <!-- ===== Материалы ===== -->
+    <div id="materials" class="section hidden">
+  <div class="section-title">Материалы</div>
+  <div id="materials-list" class="lessons-grid"></div>
+</div>
+
+
+    <!-- ===== РАСПИСАНИЕ ===== -->
+    <div id="schedule" class="section hidden">
+      <div class="section-title">Расписание</div>
+
+      <div class="profile-section">
+        <p><strong>Ссылка:</strong></p>
+        <p id="lesson-link">—</p>
+
+        <hr style="margin:1.5rem 0">
+
+        <p><strong>Общее расписание:</strong></p>
+        <p id="lesson-schedule">—</p>
+
+        <hr style="margin:1.5rem 0">
+
+        <p><strong>Доступные слоты:</strong></p>
+        <!-- ⬇️ СЮДА script.js РЕНДЕРИТ СЛОТЫ -->
+        <div id="slots-container"></div>
+
+        <hr style="margin:1.5rem 0">
+
+<p><strong>Групповые занятия:</strong></p>
+<div id="group-slots-container"></div>
+      
+      </div>
+    </div>
+
+  </div>
+  
+  <!-- ===== SUPPORT BUTTON ===== -->
+
+<div id="support-btn" onclick="toggleSupport()">?</div>
+
+<div id="support-chat" class="hidden">
+  <div id="support-messages" style="max-height:200px;overflow-y:auto;margin-bottom:10px"></div>
+  <textarea id="support-input" placeholder="Ваш вопрос..." style="margin-bottom:8px"></textarea>
+  <button onclick="sendSupport()">Отправить</button>
+</div>
+
+
+
+  <script src="script.js"></script>
+
+  <div class="hearts-container" id="hearts"></div>
+
+<script>
+function startHearts() {
+  const container = document.getElementById("hearts");
+
+  setInterval(() => {
+    const heart = document.createElement("div");
+    heart.className = "heart";
+    heart.innerHTML = "💗";
+
+    heart.style.left = Math.random() * 100 + "vw";
+    heart.style.fontSize = (16 + Math.random() * 20) + "px";
+    heart.style.animationDuration = (4 + Math.random() * 4) + "s";
+
+    container.appendChild(heart);
+
+    setTimeout(() => heart.remove(), 8000);
+  }, 300);
+}
+
+// ===== Включаем сердечки ТОЛЬКО 13-15 февраля =====
+const today = new Date();
+const day = today.getDate();
+const month = today.getMonth();
+if (month === 1 && day >= 13 && day <= 15) {
+  startHearts();
+}
+
+</script>
+</body>
+</html>
