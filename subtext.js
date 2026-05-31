@@ -503,6 +503,14 @@ async function bookGroupSlot(slotId) {
   }
 }
 
+// ================= звонок ================
+// Когда преподаватель нажимает "Начать занятие"
+async function startLesson(slotId) {
+  // Сначала помечаем слот как начатый (опционально)
+  // Потом открываем видео
+  startVideoCall(slotId);
+}
+
 // ================= SHOP =================
 async function buyItem(index) {
   try {
