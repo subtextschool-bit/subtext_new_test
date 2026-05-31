@@ -371,6 +371,8 @@
 
     .avatar-wrap {
       position: relative;
+      justify-self: center;
+      margin: 0 auto;
       width: 154px;
       height: 154px;
       display: grid;
@@ -670,33 +672,50 @@
     /* ===== NOTIFICATIONS ===== */
     #notify-btn {
       position: fixed;
-      right: 96px;
-      bottom: 22px;
+      top: 86px;
+      right: 28px;
       z-index: 9999;
-      width: 62px;
-      height: 62px;
-      display: flex;
+      min-width: 178px;
+      min-height: 48px;
+      display: inline-flex;
       align-items: center;
       justify-content: center;
-      border-radius: 50%;
-      color: white;
-      font-size: 25px;
+      gap: 0.55rem;
+      padding: 0.72rem 1rem;
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      border-radius: 999px;
+      color: #eaf9ff;
+      font-size: 0.9rem;
       font-weight: 800;
+      letter-spacing: 0.02em;
       cursor: pointer;
-      background: linear-gradient(135deg, #0b5ed7, var(--blue), var(--cyan));
-      box-shadow: 0 18px 42px rgba(22, 119, 255, 0.34);
-      transition: transform 0.25s ease, box-shadow 0.25s ease;
+      background: linear-gradient(135deg, rgba(5, 34, 70, 0.58), rgba(22, 119, 255, 0.48));
+      box-shadow: 0 16px 38px rgba(2, 28, 68, 0.24);
+      backdrop-filter: blur(18px);
+      transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
     }
 
-    #notify-btn:hover {
-      transform: translateY(-4px) rotate(-6deg);
-      box-shadow: 0 22px 54px rgba(22, 119, 255, 0.44), 0 0 0 7px rgba(53, 216, 255, 0.13);
+    .notify-icon {
+      display: inline-grid;
+      place-items: center;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.18);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.32);
     }
+
+
+    #notify-btn:hover {
+      transform: translateY(-3px);
+      background: linear-gradient(135deg, rgba(22, 119, 255, 0.7), rgba(53, 216, 255, 0.55));
+      box-shadow: 0 22px 54px rgba(22, 119, 255, 0.34), 0 0 0 7px rgba(53, 216, 255, 0.12);
+      }
 
     #notify-count {
       position: absolute;
-      top: -4px;
-      right: -4px;
+      top: -7px;
+      right: -7px;
       min-width: 22px;
       height: 22px;
       display: none;
@@ -713,11 +732,11 @@
 
     #notify-panel {
       position: fixed;
-      right: 22px;
-      bottom: 98px;
+      top: 144px;
+      right: 28px;
       z-index: 9998;
       width: min(380px, calc(100vw - 34px));
-      max-height: min(520px, calc(100vh - 130px));
+      max-height: min(520px, calc(100vh - 170px));
       overflow: hidden;
       border: 1px solid rgba(255, 255, 255, 0.74);
       border-radius: 28px;
@@ -895,8 +914,9 @@
       .nav-container button { min-width: 100%; }
       .shop-grid { grid-template-columns: 1fr; }
       .section-title { font-size: 1.85rem; }
-      #notify-btn { right: 88px; bottom: 16px; }
-      #notify-panel { right: 16px; bottom: 90px; }
+      #notify-btn { top: 72px; right: 16px; min-width: 54px; min-height: 46px; padding: 0.6rem; }
+      .notify-label { display: none; }
+      #notify-panel { top: 128px; right: 16px; bottom: auto; }
       #support-btn { right: 16px; bottom: 16px; }
       #support-chat { right: 16px; bottom: 90px; }
     }
@@ -1115,7 +1135,8 @@
 
    <!-- ===== NOTIFICATIONS ===== -->
   <div id="notify-btn" onclick="toggleNotifications()" title="Уведомления">
-    🔔
+    <span class="notify-icon">🔔</span>
+    <span class="notify-label">Уведомления</span>
     <span id="notify-count">0</span>
   </div>
 
