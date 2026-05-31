@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Личный кабинет</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 500px; margin: 40px auto; padding: 20px; }
+    input, button { padding: 10px; width: 100%; margin: 5px 0; }
+    #cabinet { display: none; margin-top: 20px; padding: 20px; border: 1px solid #ddd; border-radius: 8px; }
+    img { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; }
+    .info p { margin: 5px 0; }
+  </style>
+</head>
+<body>
+
+  <h2>Вход в кабинет</h2>
+  <input id="loginInput" type="text" placeholder="Ваш логин">
+  <button onclick="loadCabinet()">Войти</button>
+  <p id="error" style="color:red;"></p>
+
+  <div id="cabinet">
+    <img id="photo" src="" alt="Фото">
+    <h3 id="name"></h3>
+    <p>Курс: <span id="course"></span></p>
+    <div class="info" id="courseInfo"></div>
+  </div>
+
+  <script>
+    const SCRIPT_URL = 'ВСТАВЬТЕ_URL_СКРИПТА';
+
+    async function loadCabinet() {
+      const login = document.getElementById('loginInput').value.trim();
+      if (!login) return;
+
+      document.getElementById('error').textContent = '';
+      document.getElementById('cabinet').style.display = 'none';
+
+      try {
+        const res = await fetch(SCRIPT_URL, {
+          method: 'POST',
+          body: JSON.stringify({ login })
+        });
+        const data = await res.json();
+
+        if (data.error) throw new Error(data.error);
+
+        document.getElementById('name').textContent = data.name;
+        document.getElementById('photo').src = data.photo || 'https://via.placeholder.com/80';
+        document.getElementById('course').textContent = data.course;
+
+        const infoDiv = document.getElementById('courseInfo');
+        infoDiv.innerHTML = Object.entries(data.info).map(([k,v]) => `<p><b>${k}:</b> ${v}</p>`).join('');
+
+        document.getElementById('cabinet').style.display = 'block';
+      } catch (e) {
+        document.getElementById('error').textContent = e.message;
+      }
+    }
+  </script>
+</body>
+</html>
