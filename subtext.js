@@ -90,6 +90,43 @@ function playNotificationSound() {
   }
 }
 
+function parseNotificationsValue(value) {
+  if (!value) return [];
+  if (Array.isArray(value)) return value;
+
+  return String(value)
+    .split(/\n|\|/)
+    .map(item => item.trim())
+    .filter(Boolean);
+}
+
+function collectNotificationsFromData(data = {}) {
+  const u = data.user || {};
+  const candidates = [
+    data.notifications,
+    data.messages,
+    data.items,
+    data.notification,
+    data.уведомления,
+    data.Уведомления,
+    u.notifications,
+    u.notification,
+    u.уведомления,
+    u.Уведомления,
+    u.notice,
+    u.notices,
+  ];
+
+  for (const candidate of candidates) {
+    const parsed = parseNotificationsValue(candidate);
+    if (parsed.length) return parsed;
+  }
+
+  return [];
+}
+
+
+
 function renderNotifications(items = []) {
   const listEl = document.getElementById("notify-list");
   const countEl = document.getElementById("notify-count");
@@ -118,7 +155,16 @@ async function loadNotifications({ silent = false } = {}) {
   try {
     const res = await fetch(buildUrl({ action: "get_notifications", userId }));
     const data = await res.json();
-    const rawNotifications = data.notifications || data.messages || data.items || [];
+    const rawNotifications = collectNotificationsFromData(data);
+
+    if (!rawNotifications.length && data.success === false) {
+      throw new Error(data.error || "Notifications action is unavailable");
+    }
+
+    if (!rawNotifications.length && notificationsCache.length) {
+      notificationsLoadedOnce = true;
+      return;
+    }
     const nextNotifications = rawNotifications.map(normalizeNotification);
     const previousIds = new Set(notificationsCache.map(item => item.id));
     const hasNewSoundNotification = notificationsLoadedOnce
@@ -132,13 +178,7 @@ async function loadNotifications({ silent = false } = {}) {
 
     notificationsLoadedOnce = true;
   } catch (e) {
-    const fallback = cabinetData?.notifications || cabinetData?.user?.notifications || [];
-    const fallbackList = Array.isArray(fallback)
-      ? fallback
-      : String(fallback || "")
-        .split("|")
-        .map(item => item.trim())
-        .filter(Boolean);
+    const fallbackList = collectNotificationsFromData(cabinetData || {});
 
     if (fallbackList.length) {
       renderNotifications(fallbackList);
@@ -267,7 +307,7 @@ async function loadCabinet() {
     renderProgress(u.progress || 0);
     renderCourseTabs();
     renderCourseData();
-    renderNotifications(data.notifications || u.notifications || []);
+    renderNotifications(collectNotificationsFromData(data));
  
     document.getElementById("loading")?.classList.add("hidden");
     document.getElementById("main")?.classList.remove("hidden");
