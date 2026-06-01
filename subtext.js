@@ -298,7 +298,22 @@ async function loadCabinet() {
     setText("level", u.levels?.[currentCourse] || "—");
     setText("coins", u.coins || 0);
     setText("progress", u.progress || 0);
-    setText("lesson-link", u.link || "Не указана");
+    const lessonLinkEl = document.getElementById("lesson-link");
+
+if (lessonLinkEl) {
+  if (u.link) {
+    lessonLinkEl.innerHTML = `
+      <a href="${u.link}"
+         target="_blank"
+         rel="noopener"
+         class="lesson-btn">
+         🎥 Подключиться к занятию
+      </a>
+    `;
+  } else {
+    lessonLinkEl.textContent = "Ссылка пока не назначена";
+  }
+}
     setText("lesson-schedule", u.schedule || "Не указано");
 
     const avatarImg = document.getElementById("avatar-img");
