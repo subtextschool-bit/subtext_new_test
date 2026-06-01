@@ -465,6 +465,23 @@
       box-shadow: inset 0 2px 8px rgba(4, 35, 74, 0.15), 0 10px 22px rgba(22, 119, 255, 0.12);
     }
 
+    .course-rank {
+      width: min(520px, 100%);
+      margin: 0.7rem auto 0;
+      padding: 0.72rem 1rem;
+      border: 1px solid rgba(22, 119, 255, 0.16);
+      border-radius: 18px;
+      color: var(--ink);
+      font-size: 0.92rem;
+      font-weight: 800;
+      background: rgba(255, 255, 255, 0.72);
+      box-shadow: 0 10px 22px rgba(7, 42, 83, 0.08);
+    }
+
+    .course-rank strong {
+      color: var(--blue);
+    }
+    
     .xp-fill {
       width: 0%;
       height: 100%;
@@ -981,9 +998,10 @@
               <span>Прогресс обучения</span>
               <span>XP</span>
             </div>
-            <div class="xp-bar">
+           <div class="xp-bar" aria-label="Прогресс по выбранному предмету">
               <div class="xp-fill" id="xp-fill"></div>
             </div>
+            <div class="course-rank" id="course-rank">Рейтинг по предмету пока не указан</div>
           </div>
         </div>
 
