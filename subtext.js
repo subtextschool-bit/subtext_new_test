@@ -56,6 +56,85 @@ function normalizeNotification(raw = {}, index = 0) {
     sound: raw.sound !== false && raw.sound !== "FALSE" && raw.sound !== "нет",
   };
 }
+function normalizeCourseName(course = "") {
+  return String(course || "").trim().toLowerCase();
+}
+
+function getCourseLabel(course = "") {
+  const labels = {
+    english: "Английский",
+    physics: "Физика",
+  };
+  const normalized = normalizeCourseName(course);
+  return labels[normalized] || String(course || "Предмет").trim();
+}
+
+function getCourseMappedValue(source, course, fallback = "") {
+  if (source === undefined || source === null || source === "") return fallback;
+  if (typeof source !== "object" || Array.isArray(source)) return source;
+
+  const normalized = normalizeCourseName(course);
+  const candidates = [
+    course,
+    normalized,
+    `progress_${normalized}`,
+    `level_${normalized}`,
+    `${normalized}_progress`,
+    `${normalized}_level`,
+  ].filter(Boolean);
+
+  for (const key of candidates) {
+    if (Object.prototype.hasOwnProperty.call(source, key) && source[key] !== "") {
+      return source[key];
+    }
+  }
+
+  return fallback;
+}
+
+function getCourseProgress(course = getCurrentCourse()) {
+  const user = cabinetData?.user || {};
+  const progressSource = user.progressByCourse || user.progresses || user.courseProgress || user.progress;
+  return Math.max(0, Math.min(Number(getCourseMappedValue(progressSource, course, 0)) || 0, 100));
+}
+
+function getCourseRank(course = getCurrentCourse()) {
+  const user = cabinetData?.user || {};
+  const normalized = normalizeCourseName(course);
+  const sources = [user.ranks, user.rankings, user.schoolRanks, user.courseRanks, user.rank];
+
+  for (const source of sources) {
+    const value = getCourseMappedValue(source, course, "");
+    if (value !== undefined && value !== null && value !== "") return value;
+  }
+
+  if (user[`rank_${normalized}`] !== undefined) return user[`rank_${normalized}`];
+  if (user[`schoolRank_${normalized}`] !== undefined) return user[`schoolRank_${normalized}`];
+  return "";
+}
+
+function renderCourseProgressMeta(course = getCurrentCourse()) {
+  const progressValue = getCourseProgress(course);
+  const rankValue = getCourseRank(course);
+  const courseLabel = getCourseLabel(course);
+
+  setText("progress", progressValue);
+  renderProgress(progressValue);
+
+  const rankEl = document.getElementById("course-rank");
+  if (!rankEl) return;
+
+  if (!rankValue) {
+    rankEl.textContent = `Рейтинг по предмету «${courseLabel}» пока не указан`;
+    return;
+  }
+
+  const rankText = String(rankValue).trim();
+  const looksLikeNumber = /^\d+$/.test(rankText);
+  rankEl.innerHTML = looksLikeNumber
+    ? `<strong>${escapeHtml(rankText)} место</strong> по школе · ${escapeHtml(courseLabel)}`
+    : `${escapeHtml(rankText)} · ${escapeHtml(courseLabel)}`;
+}
 
 function unlockNotificationSound() {
   soundUnlocked = true;
@@ -229,7 +308,8 @@ function setCourse(course) {
   currentCourse = course;
   window.currentCourse = course;
   const levels = cabinetData?.user?.levels || {};
-  setText("level", levels[course] || "—");
+   setText("level", getCourseMappedValue(levels, course, "—") || "—");
+  renderCourseProgressMeta(course);
   renderCourseTabs();
   renderCourseData();
 }
@@ -251,7 +331,7 @@ function renderCourseTabs() {
   }
   tabs.innerHTML = courses.map(c => 
     `<button class="buy-btn" style="opacity:${c === getCurrentCourse() ? '1' : '0.5'}" onclick="setCourse('${escapeAttr(c)}')">
-       ${escapeHtml(c.charAt(0).toUpperCase() + c.slice(1))}
+          ${escapeHtml(getCourseLabel(c))}
      </button>`
   ).join("");
 }
@@ -295,9 +375,9 @@ async function loadCabinet() {
     window.currentCourse = currentCourse;
 
     setText("username", u.username || "—");
-    setText("level", u.levels?.[currentCourse] || "—");
+    setText("level", getCourseMappedValue(u.levels, currentCourse, "—") || "—");
     setText("coins", u.coins || 0);
-    setText("progress", u.progress || 0);
+    renderCourseProgressMeta(currentCourse);
     const lessonLinkEl = document.getElementById("lesson-link");
 
 if (lessonLinkEl) {
@@ -319,7 +399,6 @@ if (lessonLinkEl) {
     const avatarImg = document.getElementById("avatar-img");
     if (avatarImg) avatarImg.src = u.avatarUrl || "https://via.placeholder.com/120/2e7d32/FFFFFF?text=👤";
 
-    renderProgress(u.progress || 0);
     renderCourseTabs();
     renderCourseData();
     renderNotifications(collectNotificationsFromData(data));
