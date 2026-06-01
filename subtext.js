@@ -130,6 +130,11 @@ function collectNotificationsFromData(data = {}) {
 function renderNotifications(items = []) {
   const listEl = document.getElementById("notify-list");
   const countEl = document.getElementById("notify-count");
+  const notifyBtn = document.getElementById("notify-btn");
+
+if (notifyBtn) {
+  notifyBtn.classList.toggle("notify-alert", unreadCount > 0);
+}
   if (!listEl || !countEl) return;
 
   notificationsCache = items.map(normalizeNotification);
