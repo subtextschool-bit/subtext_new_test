@@ -1,4 +1,4 @@
-const API_URL = "https://script.google.com/macros/s/AKfycbwEQVQmQaqsueaZFU51oj3eQLit9v7cTFkfb2preRStlbUymNT6iuRkfpFuY_qwXtL2/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbwre9DYwtnNdlODAW9z5_Ii0OSjFLMQYvMhIQXONhYN8sKAav7UFxa0TkeoYi4hLmG9/exec";
 let userId = "";
 let username = "";
 let currentCourse = "";
@@ -111,6 +111,76 @@ function getCourseRank(course = getCurrentCourse()) {
   if (user[`rank_${normalized}`] !== undefined) return user[`rank_${normalized}`];
   if (user[`schoolRank_${normalized}`] !== undefined) return user[`schoolRank_${normalized}`];
   return "";
+}
+
+function getMappedLink(source, course) {
+  if (!source) return "";
+
+  const normalized = normalizeCourseName(course);
+  const readLink = (value) => {
+    if (!value) return "";
+    if (typeof value === "string") return value.trim();
+    if (typeof value !== "object" || Array.isArray(value)) return "";
+    return String(value.link || value.url || value.form || value.formUrl || "").trim();
+  };
+
+  if (Array.isArray(source)) {
+    const item = source.find(entry => normalizeCourseName(entry?.course || entry?.subject || entry?.name || entry?.title) === normalized);
+    return readLink(item);
+  }
+
+  if (typeof source === "object") {
+    const candidates = [course, normalized, `form_${normalized}`, `${normalized}_form`].filter(Boolean);
+    for (const key of candidates) {
+      if (Object.prototype.hasOwnProperty.call(source, key)) {
+        const link = readLink(source[key]);
+        if (link) return link;
+      }
+    }
+  }
+
+  return readLink(source);
+}
+
+function getSubmissionFormLink(course = getCurrentCourse()) {
+  const data = cabinetData || {};
+  const user = data.user || {};
+  const sources = [
+    data.submissionForms,
+    data.formLinks,
+    data.forms,
+    data.courseForms,
+    data.subjectForms,
+    user.submissionForms,
+    user.formLinks,
+    user.forms,
+    user.courseForms,
+    user.subjectForms,
+  ];
+
+  for (const source of sources) {
+    const link = getMappedLink(source, course);
+    if (link) return link;
+  }
+
+  return "";
+}
+
+function renderSubmissionFormLink(course = getCurrentCourse()) {
+  const linkEl = document.getElementById("submission-form-link");
+  const emptyEl = document.getElementById("submission-form-empty");
+  if (!linkEl) return;
+
+  const link = getSubmissionFormLink(course);
+  if (link) {
+    linkEl.href = link;
+    linkEl.classList.remove("hidden");
+    if (emptyEl) emptyEl.classList.add("hidden");
+  } else {
+    linkEl.removeAttribute("href");
+    linkEl.classList.add("hidden");
+    if (emptyEl) emptyEl.classList.remove("hidden");
+  }
 }
 
 function renderCourseProgressMeta(course = getCurrentCourse()) {
@@ -312,6 +382,7 @@ function setCourse(course) {
   renderCourseProgressMeta(course);
   renderCourseTabs();
   renderCourseData();
+  renderSubmissionFormLink(course);
 }
 
 function renderCourseTabs() {
@@ -402,6 +473,7 @@ if (lessonLinkEl) {
     renderCourseTabs();
     renderCourseData();
     renderNotifications(collectNotificationsFromData(data));
+    renderSubmissionFormLink(currentCourse);
  
     document.getElementById("loading")?.classList.add("hidden");
     document.getElementById("main")?.classList.remove("hidden");
@@ -453,7 +525,6 @@ function renderCourseData() {
       ? list.map(l => `<div class="lesson-card">
           <strong>Урок ${escapeHtml(l.num)}</strong><br>
           <a href="${escapeAttr(l.link)}" target="_blank" rel="noopener">Материалы</a>
-          ${l.hwLink && l.hwLink !== "-" ? `<br><a href="${escapeAttr(l.hwLink)}" target="_blank" rel="noopener">ДЗ</a>` : ""}
         </div>`).join("")
       : "<p>Нет доступных уроков.</p>";
   }
