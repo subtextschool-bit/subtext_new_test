@@ -1,4 +1,4 @@
-const API_URL = "https://script.google.com/macros/s/AKfycbwre9DYwtnNdlODAW9z5_Ii0OSjFLMQYvMhIQXONhYN8sKAav7UFxa0TkeoYi4hLmG9/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbwUn_cmSNazJrz8qswX_4AZYl9UYYLiVGsej6g2d2Bn698IOe6M4f6EozI_VK_kF-RZ/exec";
 let userId = "";
 let username = "";
 let currentCourse = "";
